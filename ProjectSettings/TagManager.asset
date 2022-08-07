@@ -8,6 +8,8 @@ TagManager:
   - Portal
   - MagicApple
   - MagicDoll
+  - FxTemporaire
+  - MagicChest
   layers:
   - Default
   - TransparentFX
