@@ -10,6 +10,8 @@ TagManager:
   - MagicDoll
   - FxTemporaire
   - MagicChest
+  - DialogueManager
+  - MagicDollTrigger
   layers:
   - Default
   - TransparentFX

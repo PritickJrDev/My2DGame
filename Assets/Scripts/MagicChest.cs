@@ -4,11 +4,27 @@ using UnityEngine;
 
 public class MagicChest : MonoBehaviour
 {
+
+    public GameObject collectedApple1;
+    public GameObject collectedEffect;
+    public GameObject playerDialogue3, vortexEffect;
+    public Transform vortexEffectSpawn;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("MagicApple"))
         {
-            Debug.Log("Got the Magic Apple");
+            Destroy(collision.gameObject, 2f);
+            StartCoroutine(FirstApple());
         }
+    }
+
+    IEnumerator FirstApple()
+    {
+        yield return new WaitForSeconds(2f);
+        collectedApple1.SetActive(true);
+        Instantiate(collectedEffect, transform.position, transform.rotation);
+        playerDialogue3.GetComponent<DialogueTrigger>().TriggerDialogue();
+        Instantiate(vortexEffect, vortexEffectSpawn.position, vortexEffectSpawn.rotation);
     }
 }

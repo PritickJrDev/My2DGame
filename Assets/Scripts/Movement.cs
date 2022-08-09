@@ -6,6 +6,7 @@ public class Movement : MonoBehaviour
 {
     Rigidbody2D rb;
     public float moveSpeed, jumpForce;
+    public bool playerCanMove;
 
     [HideInInspector] public float direction;
 
@@ -17,22 +18,32 @@ public class Movement : MonoBehaviour
     int noOfJumps, maxJumps = 0;
 
     Animator anim;
+    public Animator dialogueAnim;
+   
 
 
     private void Awake()
     {
         rb = gameObject.GetComponent<Rigidbody2D>();
         anim = gameObject.GetComponent<Animator>();
+       
+    }
+
+    private void Start()
+    {
+        moveSpeed = 0;
+        jumpForce = 0;
+        playerCanMove = true;
+        
     }
 
     private void Update()
     {
-        direction = Input.GetAxisRaw("Horizontal");
   
         PlayerJump();
-
         WalkAnimation();
-        
+        TriggerPlayerMovement();
+       
     }
 
     private void FixedUpdate()
@@ -84,6 +95,18 @@ public class Movement : MonoBehaviour
         }
     }
 
+    public void TriggerPlayerMovement()
+    {
+        if (dialogueAnim.GetBool("isDialogueOpen") == false && playerCanMove)
+        {
+            moveSpeed = 3;
+            direction = Input.GetAxisRaw("Horizontal");
+        }
+        else
+        {
+            anim.SetBool("walking", false);
+        }
+    }
     //private void OnCollisionEnter2D(Collision2D collision)
     //{
     //    if (collision.gameObject.CompareTag("DeadCollider"))
