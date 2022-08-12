@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class Interaction : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Interaction : MonoBehaviour
     bool firstAppleIsDestroyed;
 
     public GameObject dollHitEffect;
+    public GameObject teleportEffect;
 
     private Transform targetMagicChest, magicAppleTransform;
     private Rigidbody2D magicAppleRb;
@@ -26,17 +28,23 @@ public class Interaction : MonoBehaviour
     public GameObject playerDialogue2;
     public GameObject playerDialogue4;
 
+    public GameObject PlayerTextBar;
+    public Animator anim;
+
     private void Awake()
     {
         //magicAppleRb = GameObject.FindGameObjectWithTag("MagicApple").GetComponent<Rigidbody2D>();
         //magicAppleTransform = GameObject.FindGameObjectWithTag("MagicApple").GetComponent<Transform>();
         targetMagicChest = GameObject.FindGameObjectWithTag("MagicChest").GetComponent<Transform>();
-       
+        FindObjectOfType<AudioManager>().Play("level1BG");
+        FindObjectOfType<AudioManager>().Play("PortalRunning");
+
     }
 
     private void Start()
     {
         playerDialogue1.GetComponent<DialogueTrigger>().TriggerDialogue();
+        PlayerTextBar.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -44,7 +52,6 @@ public class Interaction : MonoBehaviour
         if (canMoveApple && magicAppleRb != null && !changeApplePos)
         {
             RotateAppleAroundPlayer();
-           // AddMagicApple();
             StartCoroutine(AppleToChest());
         }
         
@@ -65,6 +72,7 @@ public class Interaction : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E) && canSpawnApple == true)
         {
             isAppleActive = true;
+            FindObjectOfType<AudioManager>().Play("Activate");
         }
 
         if (eActive)
@@ -92,6 +100,8 @@ public class Interaction : MonoBehaviour
         {
             Instantiate(dollHitEffect, collision.gameObject.transform.position, collision.gameObject.transform.rotation);
             Destroy(collision.gameObject);
+            FindObjectOfType<AudioManager>().Play("MagicDollHit");
+            anim.SetTrigger("shaking");
             StartCoroutine(OpenDialogue4());
         }
 
@@ -105,6 +115,22 @@ public class Interaction : MonoBehaviour
             GameObject myDoll = Instantiate(magicDoll, spawnMagicDollPoint.position, Quaternion.identity);
             myDoll.GetComponent<Rigidbody2D>().velocity = Vector2.right * 7;
             firstAppleIsDestroyed = false;
+            PlayerTextBar.SetActive(true);
+            PlayerTextBar.GetComponentInChildren<TextMeshPro>().text = "oh no....";
+            FindObjectOfType<AudioManager>().Play("MagicDollSpawn");
+            StartCoroutine(DisablePlayerTextBar());
+
+        //    GameObject obj = Instantiate(PlayerTextBar, playerTextSpawn.position, playerTextSpawn.rotation);
+        //    obj.GetComponentInChildren<TextMeshPro>().text = "Hello i am hana";
+        }
+
+        if (collision.gameObject.CompareTag("Portal") && FindObjectOfType<MagicChest>().isAppleCollected == true)
+        {
+            Instantiate(teleportEffect, transform.position, transform.rotation);
+            FindObjectOfType<Movement>().moveSpeed = 0;
+            gameObject.GetComponent<Movement>().playerCanMove = false;
+            FindObjectOfType<AudioManager>().Play("Teleport");
+            FindObjectOfType<AudioManager>().Play("Electric");
         }
     }
 
@@ -167,6 +193,12 @@ public class Interaction : MonoBehaviour
         gameObject.GetComponent<SpriteRenderer>().flipX = false;
         gameObject.GetComponent<Movement>().playerCanMove = true;
     }
+
+    IEnumerator DisablePlayerTextBar()
+    {
+        yield return new WaitForSeconds(1f);
+        PlayerTextBar.SetActive(false);
+    }
     
 
     IEnumerator OpenDiaglogue2()
@@ -182,5 +214,4 @@ public class Interaction : MonoBehaviour
         FindObjectOfType<Movement>().moveSpeed = 0;
         playerDialogue4.GetComponent<DialogueTrigger>().TriggerDialogue();
     }
-
 }

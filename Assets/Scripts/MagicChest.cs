@@ -9,6 +9,7 @@ public class MagicChest : MonoBehaviour
     public GameObject collectedEffect;
     public GameObject playerDialogue3, vortexEffect;
     public Transform vortexEffectSpawn;
+    public bool isAppleCollected = false;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -26,5 +27,7 @@ public class MagicChest : MonoBehaviour
         Instantiate(collectedEffect, transform.position, transform.rotation);
         playerDialogue3.GetComponent<DialogueTrigger>().TriggerDialogue();
         Instantiate(vortexEffect, vortexEffectSpawn.position, vortexEffectSpawn.rotation);
+        FindObjectOfType<AudioManager>().Play("PortalOpen");
+        isAppleCollected = true;
     }
 }
