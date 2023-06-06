@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Interaction : MonoBehaviour
 {
@@ -30,6 +31,7 @@ public class Interaction : MonoBehaviour
 
     public GameObject PlayerTextBar;
     public Animator anim;
+    public Animator transitionAnim;
 
     private void Awake()
     {
@@ -131,6 +133,7 @@ public class Interaction : MonoBehaviour
             gameObject.GetComponent<Movement>().playerCanMove = false;
             FindObjectOfType<AudioManager>().Play("Teleport");
             FindObjectOfType<AudioManager>().Play("Electric");
+            StartCoroutine(SwitchScene());
         }
     }
 
@@ -213,5 +216,12 @@ public class Interaction : MonoBehaviour
         yield return new WaitForSeconds(1f);
         FindObjectOfType<Movement>().moveSpeed = 0;
         playerDialogue4.GetComponent<DialogueTrigger>().TriggerDialogue();
+    }
+
+    IEnumerator SwitchScene()
+    {
+        transitionAnim.SetTrigger("end");
+        yield return new WaitForSeconds(2.5f);
+        SceneManager.LoadScene("Test");
     }
 }
